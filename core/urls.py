@@ -6,4 +6,5 @@ app_name = 'core'
 urlpatterns = [
     path('blog/', views.blog_list, name='blog_list'),
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('gallery/', views.gallery, name='gallery'),
 ]

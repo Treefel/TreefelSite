@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.utils.text import slugify
 
@@ -59,6 +61,17 @@ class GalleryItem(models.Model):
 
     class Meta:
         ordering = ["sort_order"]
+
+    @property
+    def youtube_video_id(self):
+        """Extract video ID from YouTube URL."""
+        if not self.youtube_url:
+            return ""
+        # Match youtube.com/watch?v=ID or youtu.be/ID
+        match = re.search(
+            r"(?:youtube\.com/watch\?v=|youtu\.be/)([\w-]+)", self.youtube_url
+        )
+        return match.group(1) if match else ""
 
     def __str__(self):
         return self.title

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from core.models import BlogCategory, BlogPost
+from core.models import BlogCategory, BlogPost, GalleryItem
 
 
 def blog_list(request):
@@ -35,3 +35,21 @@ def blog_detail(request, slug):
     post = get_object_or_404(BlogPost, slug=slug, published=True)
     tags = [tag.strip() for tag in post.tags.split(",") if tag.strip()] if post.tags else []
     return render(request, "core/blog_detail.html", {"post": post, "tags": tags})
+
+
+def gallery(request):
+    items = GalleryItem.objects.all()
+
+    category = request.GET.get("category")
+    if category in ("2D", "3D"):
+        items = items.filter(category=category)
+
+    template = (
+        "core/partials/gallery_items.html"
+        if request.htmx
+        else "core/gallery.html"
+    )
+    return render(request, template, {
+        "items": items,
+        "current_category": category,
+    })

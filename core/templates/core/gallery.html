@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+
+{% block title %}Gallery - Treefel{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Page Header -->
+    <div class="text-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-secondary mb-3" style="font-family: 'Stick', sans-serif;">Gallery</h1>
+        <p class="text-dark/60 text-lg max-w-2xl mx-auto">A curated collection of original artwork, 3D renders, and creative explorations.</p>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="flex flex-wrap items-center justify-center gap-3">
+        <button
+            class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm {% if not current_category %}bg-primary text-white shadow-primary/30{% else %}bg-white text-dark/70 hover:bg-primary-light hover:text-white{% endif %}"
+            hx-get="/gallery/"
+            hx-target="#gallery-grid"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >
+            All
+        </button>
+        <button
+            class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm {% if current_category == '2D' %}bg-primary text-white shadow-primary/30{% else %}bg-white text-dark/70 hover:bg-primary-light hover:text-white{% endif %}"
+            hx-get="/gallery/?category=2D"
+            hx-target="#gallery-grid"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >
+            2D
+        </button>
+        <button
+            class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm {% if current_category == '3D' %}bg-primary text-white shadow-primary/30{% else %}bg-white text-dark/70 hover:bg-primary-light hover:text-white{% endif %}"
+            hx-get="/gallery/?category=3D"
+            hx-target="#gallery-grid"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >
+            3D
+        </button>
+    </div>
+
+    <!-- Gallery Grid Container -->
+    <div id="gallery-grid">
+        {% include "core/partials/gallery_items.html" %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openLightbox(src, title, description) {
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightbox-img');
+        const info = document.getElementById('lightbox-info');
+
+        img.src = src;
+        img.alt = title;
+        info.innerHTML = '<h3 class="text-xl font-bold mb-2" style="font-family: \'Stick\', sans-serif;">' + title + '</h3>'
+            + '<p class="text-white/70">' + description + '</p>';
+
+        lightbox.classList.remove('hidden');
+        lightbox.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+</script>
+{% endblock %}
