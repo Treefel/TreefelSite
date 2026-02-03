@@ -1,0 +1,109 @@
+{% load static %}
+
+{% if posts %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+    {% for post in posts %}
+    <article class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+        <!-- Header Image -->
+        {% if post.header_image %}
+        <a href="{% url 'core:blog_detail' slug=post.slug %}" class="block overflow-hidden">
+            <img
+                src="{{ post.header_image }}"
+                alt="{{ post.title }}"
+                class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+            >
+        </a>
+        {% else %}
+        <a href="{% url 'core:blog_detail' slug=post.slug %}" class="block">
+            <div class="w-full h-48 bg-gradient-to-br from-primary/20 via-tertiary/30 to-secondary/20 flex items-center justify-center">
+                <svg class="w-12 h-12 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                </svg>
+            </div>
+        </a>
+        {% endif %}
+
+        <!-- Card Content -->
+        <div class="p-5 flex flex-col flex-1">
+            <!-- Category Badge -->
+            {% if post.category %}
+            <span class="inline-block self-start px-3 py-1 text-xs font-medium rounded-full bg-tertiary/40 text-secondary-dark mb-3">
+                {{ post.category.name }}
+            </span>
+            {% endif %}
+
+            <!-- Title -->
+            <h2 class="text-xl font-bold text-dark mb-2 group-hover:text-primary transition-colors duration-200" style="font-family: 'Stick', sans-serif;">
+                <a href="{% url 'core:blog_detail' slug=post.slug %}" class="no-underline text-inherit">
+                    {{ post.title }}
+                </a>
+            </h2>
+
+            <!-- Date -->
+            <time class="text-sm text-dark/50 mb-3" datetime="{{ post.created_at|date:'Y-m-d' }}">
+                {{ post.created_at|date:"F j, Y" }}
+            </time>
+
+            <!-- Snippet -->
+            <p class="text-dark/70 text-sm leading-relaxed flex-1 mb-4">
+                {{ post.body|striptags|truncatechars:150 }}
+            </p>
+
+            <!-- Read More -->
+            <a href="{% url 'core:blog_detail' slug=post.slug %}" class="inline-flex items-center gap-1.5 text-primary font-medium text-sm no-underline hover:text-secondary transition-colors duration-200 group/link">
+                Read more
+                <svg class="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if posts.has_other_pages %}
+<nav class="mt-10 flex items-center justify-center gap-3" aria-label="Blog pagination">
+    {% if posts.has_previous %}
+    <a
+        href="?page={{ posts.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-dark/70 shadow-sm hover:bg-primary hover:text-white transition-all duration-200 no-underline text-sm font-medium"
+    >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/>
+        </svg>
+        Previous
+    </a>
+    {% endif %}
+
+    <span class="text-sm text-dark/50 px-3">
+        Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+    </span>
+
+    {% if posts.has_next %}
+    <a
+        href="?page={{ posts.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-dark/70 shadow-sm hover:bg-primary hover:text-white transition-all duration-200 no-underline text-sm font-medium"
+    >
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+    </a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="text-center py-16">
+    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+        <svg class="w-10 h-10 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9.75m3 0h-3m-2.25 0H5.625c-.621 0-1.125-.504-1.125-1.125V4.125C4.5 3.504 5.004 3 5.625 3h5.25M16.5 3h2.625c.621 0 1.125.504 1.125 1.125v13.5"/>
+        </svg>
+    </div>
+    <h3 class="text-xl font-bold text-dark/60 mb-2" style="font-family: 'Stick', sans-serif;">No posts yet</h3>
+    <p class="text-dark/40">Check back soon for new content!</p>
+</div>
+{% endif %}
