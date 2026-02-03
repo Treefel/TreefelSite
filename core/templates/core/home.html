@@ -1,0 +1,199 @@
+{% extends "core/base.html" %}
+
+{% block title %}Treefel - Digital Art & Creative Works{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative -mt-10 pt-16 pb-20 sm:pt-24 sm:pb-28 text-center overflow-hidden">
+    <!-- Decorative background accents -->
+    <div class="absolute inset-0 -z-10 overflow-hidden">
+        <div class="absolute top-10 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-tertiary/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Main title -->
+        <h1 class="text-6xl sm:text-7xl lg:text-8xl font-bold text-secondary tracking-tight mb-6" style="font-family: 'Stick', sans-serif;">
+            Treefel
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-2xl sm:text-3xl text-dark/60 mb-3">
+            Digital Artist | 2D & 3D
+        </p>
+        <p class="text-lg sm:text-xl text-dark/40 max-w-xl mx-auto mb-10">
+            Crafting worlds, characters, and stories through pixels and polygons.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <a href="{% url 'core:gallery' %}"
+               class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-full font-medium text-lg shadow-lg shadow-primary/30 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 no-underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25a2.25 2.25 0 00-2.25-2.25H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/>
+                </svg>
+                View Gallery
+            </a>
+            <a href="{% url 'core:blog_list' %}"
+               class="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-secondary rounded-full font-medium text-lg shadow-md border border-secondary/20 hover:bg-secondary hover:text-white hover:shadow-lg transition-all duration-300 no-underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.331 0 4.477.887 6.042 2.36M12 6.042a8.967 8.967 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6.042 2.36M12 6.042V20.4"/>
+                </svg>
+                Read Blog
+            </a>
+        </div>
+    </div>
+
+    <!-- Decorative divider -->
+    <div class="mt-16 flex items-center justify-center gap-3">
+        <div class="w-12 h-px bg-primary/30"></div>
+        <div class="w-2 h-2 rounded-full bg-tertiary"></div>
+        <div class="w-12 h-px bg-primary/30"></div>
+    </div>
+</section>
+
+<!-- Featured Artwork Section -->
+<section class="py-12 sm:py-16">
+    {% if featured_item %}
+    <div class="text-center mb-8">
+        <h2 class="text-3xl sm:text-4xl font-bold text-secondary mb-2" style="font-family: 'Stick', sans-serif;">Featured Work</h2>
+        <p class="text-dark/50 text-lg">A glimpse into the latest creation</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            {% if featured_item.media_type == "image" and featured_item.image %}
+            <!-- Featured image with right-click protection -->
+            <div class="relative overflow-hidden" oncontextmenu="return false;">
+                <img
+                    src="{{ featured_item.image }}"
+                    alt="{{ featured_item.title }}"
+                    class="w-full max-h-[500px] object-cover pointer-events-none select-none"
+                    draggable="false"
+                    loading="lazy"
+                >
+                <!-- Transparent overlay to block drag-save -->
+                <div class="absolute inset-0"></div>
+            </div>
+            {% elif featured_item.media_type == "youtube" and featured_item.youtube_video_id %}
+            <div class="relative bg-dark">
+                <iframe
+                    src="https://www.youtube-nocookie.com/embed/{{ featured_item.youtube_video_id }}"
+                    class="w-full aspect-video"
+                    title="{{ featured_item.title }}"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+            </div>
+            {% endif %}
+
+            <!-- Featured item info -->
+            <div class="p-6 sm:p-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-tertiary/40 text-secondary-dark">{{ featured_item.category }}</span>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-dark mb-2" style="font-family: 'Stick', sans-serif;">{{ featured_item.title }}</h3>
+                {% if featured_item.description %}
+                <p class="text-dark/60 text-lg leading-relaxed mb-4">{{ featured_item.description }}</p>
+                {% endif %}
+                <a href="{% url 'core:gallery' %}"
+                   class="inline-flex items-center gap-2 text-primary hover:text-secondary font-medium transition-colors duration-200 no-underline group">
+                    Explore Gallery
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty state: no gallery items -->
+    <div class="text-center py-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+            <svg class="w-10 h-10 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25a2.25 2.25 0 00-2.25-2.25H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/>
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-dark/50 mb-2" style="font-family: 'Stick', sans-serif;">Artwork Coming Soon</h2>
+        <p class="text-dark/40 text-lg max-w-md mx-auto">New pieces are being brought to life. Check back soon to see the gallery.</p>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Decorative divider -->
+<div class="flex items-center justify-center gap-3 py-4">
+    <div class="w-16 h-px bg-tertiary/50"></div>
+    <div class="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
+    <div class="w-16 h-px bg-tertiary/50"></div>
+</div>
+
+<!-- Latest Blog Post Section -->
+<section class="py-12 sm:py-16">
+    {% if latest_post %}
+    <div class="text-center mb-8">
+        <h2 class="text-3xl sm:text-4xl font-bold text-secondary mb-2" style="font-family: 'Stick', sans-serif;">Latest from the Blog</h2>
+        <p class="text-dark/50 text-lg">Thoughts, process notes, and creative musings</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+        <a href="{% url 'core:blog_detail' latest_post.slug %}" class="block no-underline group">
+            <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+                {% if latest_post.header_image %}
+                <div class="h-48 sm:h-56 overflow-hidden">
+                    <img
+                        src="{{ latest_post.header_image }}"
+                        alt="{{ latest_post.title }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                </div>
+                {% endif %}
+
+                <div class="p-6 sm:p-8">
+                    <!-- Meta -->
+                    <div class="flex items-center gap-3 text-sm text-dark/40 mb-3">
+                        {% if latest_post.category %}
+                        <span class="px-3 py-1 rounded-full bg-tertiary/30 text-secondary-dark text-xs font-medium">{{ latest_post.category.name }}</span>
+                        {% endif %}
+                        <time datetime="{{ latest_post.created_at|date:'Y-m-d' }}">{{ latest_post.created_at|date:"M j, Y" }}</time>
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="text-xl sm:text-2xl font-bold text-dark group-hover:text-primary transition-colors duration-200 mb-3" style="font-family: 'Stick', sans-serif;">
+                        {{ latest_post.title }}
+                    </h3>
+
+                    <!-- Snippet -->
+                    <p class="text-dark/60 leading-relaxed line-clamp-3 mb-4">
+                        {{ latest_post.body|truncatewords:40 }}
+                    </p>
+
+                    <!-- Read more -->
+                    <span class="inline-flex items-center gap-2 text-primary font-medium group-hover:text-secondary transition-colors duration-200">
+                        Read More
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {% else %}
+    <!-- Empty state: no blog posts -->
+    <div class="text-center py-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+            <svg class="w-10 h-10 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.331 0 4.477.887 6.042 2.36M12 6.042a8.967 8.967 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6.042 2.36M12 6.042V20.4"/>
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-dark/50 mb-2" style="font-family: 'Stick', sans-serif;">Blog Posts on the Way</h2>
+        <p class="text-dark/40 text-lg max-w-md mx-auto">Stories and dev logs are being written. Stay tuned for the first post.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

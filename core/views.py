@@ -5,6 +5,15 @@ from core.forms import FeedbackForm
 from core.models import BlogCategory, BlogPost, GalleryItem, SiteSetting
 
 
+def home(request):
+    latest_post = BlogPost.objects.filter(published=True).first()
+    featured_item = GalleryItem.objects.first()
+    return render(request, "core/home.html", {
+        "latest_post": latest_post,
+        "featured_item": featured_item,
+    })
+
+
 def blog_list(request):
     posts = BlogPost.objects.filter(published=True).select_related("category")
     categories = BlogCategory.objects.all()
