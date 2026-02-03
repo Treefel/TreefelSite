@@ -1,0 +1,65 @@
+<div id="feedback-{{ msg.pk }}" class="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-200">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 p-5">
+        <!-- Status & Subject -->
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-1">
+                {% if msg.is_completed %}
+                <span class="inline-block px-3 py-0.5 bg-primary/20 text-primary-dark text-xs font-medium rounded-full shrink-0">
+                    Completed
+                </span>
+                {% else %}
+                <span class="inline-block px-3 py-0.5 bg-tertiary/40 text-secondary-dark text-xs font-medium rounded-full shrink-0">
+                    Pending
+                </span>
+                {% endif %}
+                <h3 class="font-medium text-dark text-lg truncate">{{ msg.subject }}</h3>
+            </div>
+            <div class="flex items-center gap-3 text-sm text-dark/50">
+                {% if msg.email %}
+                <span class="truncate">{{ msg.email }}</span>
+                <span class="text-dark/30">|</span>
+                {% endif %}
+                <span>{{ msg.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+        </div>
+
+        <!-- Toggle Button -->
+        <div class="shrink-0">
+            <form method="POST" action="{% url 'core:admin_feedback_toggle' pk=msg.pk %}">
+                {% csrf_token %}
+                <button type="submit"
+                        hx-post="{% url 'core:admin_feedback_toggle' pk=msg.pk %}"
+                        hx-target="#feedback-{{ msg.pk }}"
+                        hx-swap="outerHTML"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors duration-200 font-medium
+                            {% if msg.is_completed %}
+                                bg-dark/10 text-dark/60 hover:bg-dark/20
+                            {% else %}
+                                bg-primary/15 text-primary-dark hover:bg-primary/30
+                            {% endif %}">
+                    {% if msg.is_completed %}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                    </svg>
+                    Reopen
+                    {% else %}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Mark Complete
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expandable Body -->
+    <details class="border-t border-light-dim">
+        <summary class="px-5 py-3 cursor-pointer text-sm text-dark/60 hover:text-dark hover:bg-light/50 transition-colors duration-200 select-none">
+            Show message body
+        </summary>
+        <div class="px-5 pb-5 pt-1">
+            <p class="text-dark/80 whitespace-pre-wrap leading-relaxed">{{ msg.body }}</p>
+        </div>
+    </details>
+</div>

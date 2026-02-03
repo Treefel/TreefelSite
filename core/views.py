@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 from core.forms import FeedbackForm, BlogPostForm, BlogCategoryForm, GalleryItemForm
-from core.models import BlogCategory, BlogPost, GalleryItem, SiteSetting
+from core.models import BlogCategory, BlogPost, FeedbackMessage, GalleryItem, SiteSetting
 from core.storage import upload_image
 
 
@@ -238,3 +238,50 @@ def admin_gallery_reorder(request):
     for index, pk in enumerate(order):
         GalleryItem.objects.filter(pk=pk).update(sort_order=index)
     return JsonResponse({"status": "ok"})
+
+
+# ---------------------------------------------------------------------------
+# Admin Feedback Views
+# ---------------------------------------------------------------------------
+
+
+@login_required
+def admin_feedback(request):
+    messages_qs = FeedbackMessage.objects.all()
+
+    filter_param = request.GET.get("filter")
+    if filter_param == "completed":
+        messages_qs = messages_qs.filter(is_completed=True)
+    elif filter_param == "new":
+        messages_qs = messages_qs.filter(is_completed=False)
+
+    welcome = SiteSetting.objects.filter(key="feedback_welcome").first()
+    welcome_message = welcome.value if welcome else ""
+
+    template = "core/partials/admin_feedback_list.html" if request.htmx else "core/admin_feedback.html"
+    return render(request, template, {
+        "messages": messages_qs,
+        "welcome_message": welcome_message,
+        "current_filter": filter_param,
+    })
+
+
+@login_required
+@require_POST
+def admin_feedback_toggle(request, pk):
+    msg = get_object_or_404(FeedbackMessage, pk=pk)
+    msg.is_completed = not msg.is_completed
+    msg.save()
+    if request.htmx:
+        return render(request, "core/partials/admin_feedback_row.html", {"msg": msg})
+    return redirect("core:admin_feedback")
+
+
+@login_required
+@require_POST
+def admin_feedback_welcome(request):
+    text = request.POST.get("welcome_message", "")
+    setting, _ = SiteSetting.objects.get_or_create(key="feedback_welcome")
+    setting.value = text
+    setting.save()
+    return redirect("core:admin_feedback")

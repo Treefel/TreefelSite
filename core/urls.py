@@ -25,4 +25,9 @@ urlpatterns = [
     path('admin-gallery/<int:pk>/edit/', views.admin_gallery_edit, name='admin_gallery_edit'),
     path('admin-gallery/<int:pk>/delete/', views.admin_gallery_delete, name='admin_gallery_delete'),
     path('admin-gallery/reorder/', views.admin_gallery_reorder, name='admin_gallery_reorder'),
+
+    # Admin Feedback
+    path('admin-feedback/', views.admin_feedback, name='admin_feedback'),
+    path('admin-feedback/<int:pk>/toggle/', views.admin_feedback_toggle, name='admin_feedback_toggle'),
+    path('admin-feedback/welcome/', views.admin_feedback_welcome, name='admin_feedback_welcome'),
 ]
