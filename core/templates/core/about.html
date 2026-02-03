@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+
+{% block title %}About - Treefel{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-10">
+    <!-- Page Header -->
+    <div class="text-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-secondary mb-3" style="font-family: 'Stick', sans-serif;">About Treefel</h1>
+    </div>
+
+    <!-- Avatar Placeholder -->
+    <div class="flex justify-center">
+        <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-primary/15 border-4 border-primary/30 flex items-center justify-center shadow-lg">
+            <svg class="w-16 h-16 sm:w-20 sm:h-20 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Bio Content -->
+    <div class="bg-white rounded-2xl shadow-sm p-8 sm:p-10 space-y-5">
+        <p class="text-dark/80 text-lg leading-relaxed">
+            Digital artist creating 2D and 3D artwork. More details coming soon.
+        </p>
+        <p class="text-dark/60 leading-relaxed">
+            This site is a home for sharing creative works, thoughts, and ideas. Browse the
+            <a href="{% url 'core:gallery' %}" class="text-primary hover:text-secondary underline transition-colors duration-200">gallery</a>
+            to see artwork, or check the
+            <a href="{% url 'core:blog_list' %}" class="text-primary hover:text-secondary underline transition-colors duration-200">blog</a>
+            for dev logs and creative process notes.
+        </p>
+    </div>
+
+    <!-- Contact CTA -->
+    <div class="text-center">
+        <a href="{% url 'core:feedback' %}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full font-medium shadow-md hover:bg-secondary transition-colors duration-200 no-underline">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+            Send Feedback
+        </a>
+    </div>
+</div>
+{% endblock %}

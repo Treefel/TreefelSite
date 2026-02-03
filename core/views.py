@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from core.models import BlogCategory, BlogPost, GalleryItem
+from django_ratelimit.decorators import ratelimit
+from core.forms import FeedbackForm
+from core.models import BlogCategory, BlogPost, GalleryItem, SiteSetting
 
 
 def blog_list(request):
@@ -52,4 +54,32 @@ def gallery(request):
     return render(request, template, {
         "items": items,
         "current_category": category,
+    })
+
+
+def about(request):
+    return render(request, "core/about.html")
+
+
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
+def feedback(request):
+    welcome = SiteSetting.objects.filter(key="feedback_welcome").first()
+    welcome_message = welcome.value if welcome else ""
+
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid() and not form.cleaned_data.get("honeypot"):
+            form.save()
+            template = "core/partials/feedback_form.html" if request.htmx else "core/feedback.html"
+            return render(request, template, {
+                "form": FeedbackForm(),
+                "welcome_message": welcome_message,
+                "success": True,
+            })
+    else:
+        form = FeedbackForm()
+
+    return render(request, "core/feedback.html", {
+        "form": form,
+        "welcome_message": welcome_message,
     })

@@ -1,0 +1,91 @@
+{% if success %}
+<div class="rounded-xl bg-primary/10 border border-primary/30 p-5 mb-6">
+    <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-secondary font-medium">Thank you for your feedback!</p>
+    </div>
+</div>
+{% endif %}
+
+<form
+    hx-post="{% url 'core:feedback' %}"
+    hx-target="#feedback-container"
+    hx-swap="innerHTML"
+    method="post"
+>
+    {% csrf_token %}
+
+    <!-- Honeypot (hidden from real users) -->
+    {{ form.honeypot }}
+
+    <div class="space-y-5">
+        <!-- Email Field -->
+        <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-dark/70 mb-1.5">
+                Email <span class="text-dark/40">(optional)</span>
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Subject Field -->
+        <div>
+            <label for="{{ form.subject.id_for_label }}" class="block text-sm font-medium text-dark/70 mb-1.5">
+                Subject <span class="text-red-400">*</span>
+            </label>
+            {{ form.subject }}
+            {% if form.subject.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.subject.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Body Field -->
+        <div>
+            <label for="{{ form.body.id_for_label }}" class="block text-sm font-medium text-dark/70 mb-1.5">
+                Message <span class="text-red-400">*</span>
+            </label>
+            {{ form.body }}
+            {% if form.body.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.body.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+            <button
+                type="submit"
+                class="w-full sm:w-auto px-8 py-3 bg-primary text-white rounded-full font-medium shadow-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 transition-colors duration-200"
+            >
+                Send Message
+            </button>
+        </div>
+    </div>
+</form>
+
+<style>
+    #feedback-container input[type="text"],
+    #feedback-container input[type="email"],
+    #feedback-container textarea {
+        display: block;
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.75rem;
+        font-family: 'Poor Story', cursive;
+        font-size: 1.05rem;
+        color: #1a1a1a;
+        background-color: #fafaf8;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #feedback-container input[type="text"]:focus,
+    #feedback-container input[type="email"]:focus,
+    #feedback-container textarea:focus {
+        outline: none;
+        border-color: #87aa6c;
+        box-shadow: 0 0 0 3px rgba(135, 170, 108, 0.2);
+    }
+</style>

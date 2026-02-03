@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+
+{% block title %}Feedback - Treefel{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+    <!-- Page Header -->
+    <div class="text-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-secondary mb-3" style="font-family: 'Stick', sans-serif;">Feedback</h1>
+        {% if welcome_message %}
+        <p class="text-dark/60 text-lg max-w-xl mx-auto">{{ welcome_message }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Feedback Form Container -->
+    <div class="bg-white rounded-2xl shadow-sm p-8 sm:p-10">
+        <div id="feedback-container">
+            {% include "core/partials/feedback_form.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}
