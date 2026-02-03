@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.utils.text import slugify
 from core.models import BlogCategory, BlogPost, GalleryItem, FeedbackMessage, SiteSetting
 
 
