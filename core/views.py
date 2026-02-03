@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from django_ratelimit.decorators import ratelimit
-from core.forms import FeedbackForm
+from core.forms import FeedbackForm, BlogPostForm, BlogCategoryForm
 from core.models import BlogCategory, BlogPost, GalleryItem, SiteSetting
+from core.storage import upload_image
 
 
 def home(request):
@@ -92,3 +94,79 @@ def feedback(request):
         "form": form,
         "welcome_message": welcome_message,
     })
+
+
+# ---------------------------------------------------------------------------
+# Admin Blog Views
+# ---------------------------------------------------------------------------
+
+
+@login_required
+def admin_blog(request):
+    posts = BlogPost.objects.select_related("category").all()
+    categories = BlogCategory.objects.all()
+    return render(request, "core/admin_blog.html", {
+        "posts": posts,
+        "categories": categories,
+        "category_form": BlogCategoryForm(),
+    })
+
+
+@login_required
+def admin_blog_create(request):
+    if request.method == "POST":
+        form = BlogPostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            if "header_image_file" in request.FILES:
+                post.header_image = upload_image(
+                    request.FILES["header_image_file"], folder="blog"
+                )
+            post.save()
+            return redirect("core:admin_blog")
+    else:
+        form = BlogPostForm()
+    return render(request, "core/admin_blog_form.html", {"form": form, "editing": False})
+
+
+@login_required
+def admin_blog_edit(request, pk):
+    post = get_object_or_404(BlogPost, pk=pk)
+    if request.method == "POST":
+        form = BlogPostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            if "header_image_file" in request.FILES:
+                post.header_image = upload_image(
+                    request.FILES["header_image_file"], folder="blog"
+                )
+            post.save()
+            return redirect("core:admin_blog")
+    else:
+        form = BlogPostForm(instance=post)
+    return render(request, "core/admin_blog_form.html", {"form": form, "editing": True, "post": post})
+
+
+@login_required
+def admin_blog_delete(request, pk):
+    post = get_object_or_404(BlogPost, pk=pk)
+    if request.method == "POST":
+        post.delete()
+    return redirect("core:admin_blog")
+
+
+@login_required
+def admin_blog_category_create(request):
+    if request.method == "POST":
+        form = BlogCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return redirect("core:admin_blog")
+
+
+@login_required
+def admin_blog_category_delete(request, pk):
+    cat = get_object_or_404(BlogCategory, pk=pk)
+    if request.method == "POST":
+        cat.delete()
+    return redirect("core:admin_blog")
