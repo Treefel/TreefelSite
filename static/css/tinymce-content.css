@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+
+body {
+  font-family: "Poor Story", cursive;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #1a1a1a;
+  padding: 0.5rem;
+}

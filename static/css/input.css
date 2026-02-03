@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #87aa6c;
+  --color-primary-light: #9dbe85;
+  --color-primary-dark: #6e9455;
+  --color-secondary: #567e54;
+  --color-secondary-light: #6e9a6b;
+  --color-secondary-dark: #3f5e3d;
+  --color-tertiary: #cfdc7b;
+  --color-tertiary-light: #dbe69e;
+  --color-tertiary-dark: #b8c55a;
+  --color-dark: #1a1a1a;
+  --color-light: #f5f5f0;
+  --color-light-dim: #e8e8e0;
+
+  --font-heading: "Stick", sans-serif;
+  --font-body: "Poor Story", cursive;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-dark);
+  background-color: var(--color-light);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
