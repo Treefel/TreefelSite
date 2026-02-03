@@ -157,21 +157,31 @@ R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY", "")
 R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "treefel-media")
 R2_CUSTOM_DOMAIN = os.getenv("R2_CUSTOM_DOMAIN", "")
 
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 if R2_ACCOUNT_ID:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-            "OPTIONS": {
-                "access_key": R2_ACCESS_KEY_ID,
-                "secret_key": R2_SECRET_ACCESS_KEY,
-                "bucket_name": R2_BUCKET_NAME,
-                "endpoint_url": f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
-                "custom_domain": R2_CUSTOM_DOMAIN or None,
-                "default_acl": "public-read",
-                "signature_version": "s3v4",
-            },
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": R2_ACCESS_KEY_ID,
+            "secret_key": R2_SECRET_ACCESS_KEY,
+            "bucket_name": R2_BUCKET_NAME,
+            "endpoint_url": f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
+            "custom_domain": R2_CUSTOM_DOMAIN or None,
+            "default_acl": "public-read",
+            "signature_version": "s3v4",
         },
     }
+
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
