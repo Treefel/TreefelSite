@@ -18,4 +18,11 @@ urlpatterns = [
     path('admin-blog/<int:pk>/delete/', views.admin_blog_delete, name='admin_blog_delete'),
     path('admin-blog/category/create/', views.admin_blog_category_create, name='admin_blog_category_create'),
     path('admin-blog/category/<int:pk>/delete/', views.admin_blog_category_delete, name='admin_blog_category_delete'),
+
+    # Admin Gallery
+    path('admin-gallery/', views.admin_gallery, name='admin_gallery'),
+    path('admin-gallery/create/', views.admin_gallery_create, name='admin_gallery_create'),
+    path('admin-gallery/<int:pk>/edit/', views.admin_gallery_edit, name='admin_gallery_edit'),
+    path('admin-gallery/<int:pk>/delete/', views.admin_gallery_delete, name='admin_gallery_delete'),
+    path('admin-gallery/reorder/', views.admin_gallery_reorder, name='admin_gallery_reorder'),
 ]

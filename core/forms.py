@@ -1,6 +1,6 @@
 from django import forms
 from tinymce.widgets import TinyMCE
-from core.models import FeedbackMessage, BlogPost, BlogCategory
+from core.models import FeedbackMessage, BlogPost, BlogCategory, GalleryItem
 
 
 class FeedbackForm(forms.ModelForm):
@@ -40,4 +40,18 @@ class BlogCategoryForm(forms.ModelForm):
         fields = ["name"]
         widgets = {
             "name": forms.TextInput(attrs={"placeholder": "Category name"}),
+        }
+
+
+class GalleryItemForm(forms.ModelForm):
+    image_file = forms.ImageField(required=False, help_text="Upload an image file")
+
+    class Meta:
+        model = GalleryItem
+        fields = ["title", "description", "category", "media_type", "image", "youtube_url", "sort_order"]
+        widgets = {
+            "title": forms.TextInput(attrs={"placeholder": "Title"}),
+            "description": forms.Textarea(attrs={"placeholder": "Description / context", "rows": 3}),
+            "image": forms.URLInput(attrs={"placeholder": "Image URL (or upload below)"}),
+            "youtube_url": forms.URLInput(attrs={"placeholder": "YouTube URL"}),
         }

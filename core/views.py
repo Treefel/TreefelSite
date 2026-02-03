@@ -1,8 +1,12 @@
+import json
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
-from core.forms import FeedbackForm, BlogPostForm, BlogCategoryForm
+from core.forms import FeedbackForm, BlogPostForm, BlogCategoryForm, GalleryItemForm
 from core.models import BlogCategory, BlogPost, GalleryItem, SiteSetting
 from core.storage import upload_image
 
@@ -170,3 +174,67 @@ def admin_blog_category_delete(request, pk):
     if request.method == "POST":
         cat.delete()
     return redirect("core:admin_blog")
+
+
+# ---------------------------------------------------------------------------
+# Admin Gallery Views
+# ---------------------------------------------------------------------------
+
+
+@login_required
+def admin_gallery(request):
+    items = GalleryItem.objects.all()
+    return render(request, "core/admin_gallery.html", {"items": items})
+
+
+@login_required
+def admin_gallery_create(request):
+    if request.method == "POST":
+        form = GalleryItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            if "image_file" in request.FILES:
+                item.image = upload_image(
+                    request.FILES["image_file"], folder="gallery"
+                )
+            item.save()
+            return redirect("core:admin_gallery")
+    else:
+        form = GalleryItemForm()
+    return render(request, "core/admin_gallery_form.html", {"form": form, "editing": False})
+
+
+@login_required
+def admin_gallery_edit(request, pk):
+    item = get_object_or_404(GalleryItem, pk=pk)
+    if request.method == "POST":
+        form = GalleryItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            item = form.save(commit=False)
+            if "image_file" in request.FILES:
+                item.image = upload_image(
+                    request.FILES["image_file"], folder="gallery"
+                )
+            item.save()
+            return redirect("core:admin_gallery")
+    else:
+        form = GalleryItemForm(instance=item)
+    return render(request, "core/admin_gallery_form.html", {"form": form, "editing": True, "item": item})
+
+
+@login_required
+def admin_gallery_delete(request, pk):
+    item = get_object_or_404(GalleryItem, pk=pk)
+    if request.method == "POST":
+        item.delete()
+    return redirect("core:admin_gallery")
+
+
+@login_required
+@require_POST
+def admin_gallery_reorder(request):
+    data = json.loads(request.body)
+    order = data.get("order", [])
+    for index, pk in enumerate(order):
+        GalleryItem.objects.filter(pk=pk).update(sort_order=index)
+    return JsonResponse({"status": "ok"})

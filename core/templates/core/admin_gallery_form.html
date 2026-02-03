@@ -1,0 +1,175 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if editing %}Edit Gallery Item{% else %}Add Gallery Item{% endif %} - Treefel{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Page Header -->
+    <div class="flex items-center gap-4">
+        <a href="{% url 'core:admin_gallery' %}"
+           class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white shadow-sm text-dark/50 hover:text-primary hover:shadow-md transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <h1 class="text-3xl font-bold text-secondary" style="font-family: 'Stick', sans-serif;">
+            {% if editing %}Edit Gallery Item{% else %}Add Gallery Item{% endif %}
+        </h1>
+    </div>
+
+    <!-- Form Errors -->
+    {% if form.errors %}
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="font-medium text-red-800">Please fix the following errors:</p>
+                <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Gallery Item Form -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Basic Info -->
+        <div class="bg-white rounded-xl shadow-sm p-6 space-y-5">
+            <h2 class="text-lg font-bold text-secondary" style="font-family: 'Stick', sans-serif;">Basic Info</h2>
+
+            <!-- Title -->
+            <div>
+                <label for="id_title" class="block text-sm font-semibold text-secondary mb-1.5">Title</label>
+                <input type="text" name="title" id="id_title"
+                       value="{{ form.title.value|default_if_none:'' }}"
+                       placeholder="Title"
+                       required
+                       class="w-full px-4 py-3 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark placeholder-dark/40 text-lg">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="id_description" class="block text-sm font-semibold text-secondary mb-1.5">Description</label>
+                <textarea name="description" id="id_description" rows="3"
+                          placeholder="Description / context"
+                          class="w-full px-4 py-3 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark placeholder-dark/40">{{ form.description.value|default_if_none:'' }}</textarea>
+            </div>
+
+            <!-- Category & Media Type -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label for="id_category" class="block text-sm font-semibold text-secondary mb-1.5">Category</label>
+                    <select name="category" id="id_category"
+                            class="w-full px-4 py-2.5 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark">
+                        <option value="2D" {% if form.category.value == "2D" %}selected{% endif %}>2D</option>
+                        <option value="3D" {% if form.category.value == "3D" %}selected{% endif %}>3D</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="id_media_type" class="block text-sm font-semibold text-secondary mb-1.5">Media Type</label>
+                    <select name="media_type" id="id_media_type"
+                            class="w-full px-4 py-2.5 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark"
+                            onchange="toggleMediaFields()">
+                        <option value="image" {% if form.media_type.value == "image" or not form.media_type.value %}selected{% endif %}>Image</option>
+                        <option value="youtube" {% if form.media_type.value == "youtube" %}selected{% endif %}>YouTube</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sort Order -->
+            <div class="max-w-xs">
+                <label for="id_sort_order" class="block text-sm font-semibold text-secondary mb-1.5">Sort Order</label>
+                <input type="number" name="sort_order" id="id_sort_order"
+                       value="{{ form.sort_order.value|default_if_none:'0' }}"
+                       class="w-full px-4 py-2.5 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark">
+            </div>
+        </div>
+
+        <!-- Image Fields -->
+        <div id="image-fields" class="bg-white rounded-xl shadow-sm p-6 space-y-5">
+            <h2 class="text-lg font-bold text-secondary" style="font-family: 'Stick', sans-serif;">Image</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label for="id_image" class="block text-sm font-semibold text-secondary mb-1.5">Image URL</label>
+                    <input type="url" name="image" id="id_image"
+                           value="{{ form.image.value|default_if_none:'' }}"
+                           placeholder="Image URL (or upload below)"
+                           class="w-full px-4 py-2.5 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark placeholder-dark/40">
+                </div>
+                <div>
+                    <label for="id_image_file" class="block text-sm font-semibold text-secondary mb-1.5">Or Upload Image</label>
+                    <input type="file" name="image_file" id="id_image_file"
+                           accept="image/*"
+                           class="w-full px-4 py-2 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
+                    <p class="mt-1 text-xs text-dark/40">Upload will override the URL field.</p>
+                </div>
+            </div>
+
+            {% if editing and item.image %}
+            <div class="mt-2">
+                <p class="text-sm text-dark/50 mb-2">Current image:</p>
+                <img src="{{ item.image }}" alt="{{ item.title }}" class="max-w-xs rounded-lg shadow-sm border border-light-dim">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- YouTube Fields -->
+        <div id="youtube-fields" class="bg-white rounded-xl shadow-sm p-6 space-y-5" style="display: none;">
+            <h2 class="text-lg font-bold text-secondary" style="font-family: 'Stick', sans-serif;">YouTube</h2>
+
+            <div>
+                <label for="id_youtube_url" class="block text-sm font-semibold text-secondary mb-1.5">YouTube URL</label>
+                <input type="url" name="youtube_url" id="id_youtube_url"
+                       value="{{ form.youtube_url.value|default_if_none:'' }}"
+                       placeholder="YouTube URL (e.g. https://youtube.com/watch?v=...)"
+                       class="w-full px-4 py-2.5 border border-dark/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-light text-dark placeholder-dark/40">
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-end gap-3">
+                <a href="{% url 'core:admin_gallery' %}"
+                   class="px-6 py-2.5 text-dark/60 hover:text-dark bg-light-dim hover:bg-dark/10 rounded-lg transition-colors duration-200 font-medium">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="px-8 py-2.5 bg-primary text-white rounded-lg shadow-md hover:bg-primary-dark transition-colors duration-200 font-medium">
+                    {% if editing %}Save Changes{% else %}Add Item{% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleMediaFields() {
+        var mediaType = document.getElementById('id_media_type').value;
+        var imageFields = document.getElementById('image-fields');
+        var youtubeFields = document.getElementById('youtube-fields');
+
+        if (mediaType === 'image') {
+            imageFields.style.display = '';
+            youtubeFields.style.display = 'none';
+        } else {
+            imageFields.style.display = 'none';
+            youtubeFields.style.display = '';
+        }
+    }
+
+    // Initialize on page load
+    toggleMediaFields();
+</script>
+{% endblock %}
