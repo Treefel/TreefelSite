@@ -285,3 +285,18 @@ def admin_feedback_welcome(request):
     setting.value = text
     setting.save()
     return redirect("core:admin_feedback")
+
+
+# ---------------------------------------------------------------------------
+# TinyMCE Image Upload
+# ---------------------------------------------------------------------------
+
+
+@login_required
+@require_POST
+def tinymce_upload(request):
+    file = request.FILES.get("file")
+    if not file:
+        return JsonResponse({"error": "No file provided"}, status=400)
+    url = upload_image(file, folder="blog")
+    return JsonResponse({"location": url})

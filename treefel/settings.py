@@ -145,6 +145,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'plugins': 'lists link image code',
     'toolbar': 'undo redo | bold italic underline | bullist numlist | link image | code',
     'content_css': '/static/css/tinymce-content.css',
+    'images_upload_url': '/api/upload/',
+    'images_upload_credentials': True,
+    'automatic_uploads': True,
 }
 
 # Cloudflare R2 Storage

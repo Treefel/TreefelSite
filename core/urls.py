@@ -30,4 +30,7 @@ urlpatterns = [
     path('admin-feedback/', views.admin_feedback, name='admin_feedback'),
     path('admin-feedback/<int:pk>/toggle/', views.admin_feedback_toggle, name='admin_feedback_toggle'),
     path('admin-feedback/welcome/', views.admin_feedback_welcome, name='admin_feedback_welcome'),
+
+    # TinyMCE Upload
+    path('api/upload/', views.tinymce_upload, name='tinymce_upload'),
 ]
