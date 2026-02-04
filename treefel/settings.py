@@ -158,6 +158,9 @@ R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "treefel-media")
 R2_CUSTOM_DOMAIN = os.getenv("R2_CUSTOM_DOMAIN", "")
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
