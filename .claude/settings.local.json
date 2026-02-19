@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(C:/Projects/treefel/venv/Scripts/pip.exe list:*)",
+      "Bash(C:/Projects/treefel/venv/Scripts/python.exe:*)",
+      "Bash(C:/Projects/treefel/venv/Scripts/pip.exe install:*)",
+      "Bash(C:/Projects/treefel/venv/Scripts/pip.exe freeze)",
+      "Bash(venv/Scripts/django-admin.exe startproject:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: initial Django project scaffolding with core app\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git diff:*)",
+      "Bash(test:*)",
+      "Bash(git commit:*)",
+      "Bash(venv/Scripts/python.exe:*)",
+      "Bash(C:/Projects/treefel/venv/Scripts/tailwindcss.exe:*)",
+      "Bash(python manage.py test:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(python:*)",
+      "Bash(C:/Projects/treefel/venv/Scripts/pip.exe show:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
