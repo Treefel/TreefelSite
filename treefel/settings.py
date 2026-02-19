@@ -32,6 +32,11 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# Auto-include Railway's public domain when deployed there
+_railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+if _railway_domain:
+    ALLOWED_HOSTS.append(_railway_domain)
+
 
 # Application definition
 
@@ -182,6 +187,7 @@ if R2_ACCOUNT_ID:
 
 # Security settings for production
 if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
